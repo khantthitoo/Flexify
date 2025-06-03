@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Django
+*.log
+*.pot
+*.pyc
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+*.mo
+*.pyo
+*.pyd
+
+# Django Migrations
+**/migrations/
+!*/migrations/__init__.py
+
+# Environments
+.env
+.env.*
+*.env
+
+# Virtual Environments
+env/
+venv/
+ENV/
+.envrc
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.swp
+
+# macOS
+.DS_Store
+
+# Node/React (if using frontend)
+node_modules/
+build/
+*.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+coverage/
+
+# System
+Thumbs.db
+ehthumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker (optional)
+*.pid
+docker-compose.override.yml
+

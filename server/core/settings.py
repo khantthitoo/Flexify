@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     
     # 3rd Party Apps
     'rest_framework',
-    'djoser'
+    'djoser',
+    
+    # My Apps
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -121,7 +124,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -133,4 +137,14 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
    'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+AUTH_USER_MODEL = 'user.User'
+
+DJOSER = {
+    'SERIALIZERS': {
+        'user': 'user.serializers.UserSerializer',
+        'user_create': 'user.serializers.UserCreateSerializer',
+        'current_user': 'user.serializers.UserSerializer',
+    }
 }
