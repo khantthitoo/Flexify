@@ -6,7 +6,7 @@ const LoginPage = () => {
             <h1 className="mx-auto text-5xl font-extrabold italic text-[var(--primary)]">FLEXIFY</h1>
             <h2 className="mx-auto text-lg font-medium text-[var(--primary)]/50">Welcome Back!</h2>
 
-            <AuthForm action="login" />
+            <AuthForm />
         </div>
     )
 }

@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { baseURL } from "../../utils/axios";
+import { ClipLoader } from "react-spinners";
 
-interface AuthFormProps {
-    action: string;
-}
-
-const AuthForm: React.FC<AuthFormProps> = ({ action }) => {
+const AuthForm = () => {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
@@ -16,15 +13,23 @@ const AuthForm: React.FC<AuthFormProps> = ({ action }) => {
 
         setLoading(true);
         try {
-            const { data } = await axios.post(`${baseURL}/auth/jwt/create`, {
-                username: username,
-                password: password,
-            });
+            const { data } = await axios.post(
+                `${baseURL}/auth/jwt/create`,
+                {
+                    username: username,
+                    password: password,
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
-            localStorage.setItem('accessToken', data.access);
-            localStorage.setItem('refreshToken', data.refresh);
+            localStorage.setItem("accessToken", data.access);
+            localStorage.setItem("refreshToken", data.refresh);
         } catch (err: any) {
-            console.error(err)
+            alert(err.response.data.detail);
         } finally {
             setLoading(false);
         }
@@ -63,7 +68,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ action }) => {
 
             {/* Submit Btn */}
             <button className="w-4/5 mx-auto h-12 rounded-lg bg-[var(--primary)] text-xl font-medium cursor-pointer hover:opacity-80">
-                {action === "login" ? "Login" : "Register"}
+                {loading ? (
+                    <ClipLoader
+                        loading={true}
+                        color="black"
+                        className="mt-1"
+                        size={25}
+                    />
+                ) : (
+                    "Login"
+                )}
             </button>
             {/* End Submit Btn */}
         </form>
