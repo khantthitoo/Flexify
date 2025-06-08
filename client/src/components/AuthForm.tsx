@@ -1,37 +1,19 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { baseURL } from "../../utils/axios";
 import { ClipLoader } from "react-spinners";
+import { useNavigate } from "react-router";
+import { useAuth } from "../contexts/AuthContext";
 
 const AuthForm = () => {
+    const navigate = useNavigate();
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
+    const { login } = useAuth();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        setLoading(true);
-        try {
-            const { data } = await axios.post(
-                `${baseURL}/auth/jwt/create`,
-                {
-                    username: username,
-                    password: password,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-
-            localStorage.setItem("accessToken", data.access);
-            localStorage.setItem("refreshToken", data.refresh);
-        } catch (err: any) {
-            alert(err.response.data.detail);
-        } finally {
-            setLoading(false);
+        if (await login({username, password, setLoading})) {
+            navigate('/dashboard');
         }
     };
 
