@@ -36,6 +36,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { format } from "path";
+import { useAddMemberModal } from "@/contexts/AddMemberModalContext";
 
 // const data: Member[] = [
 //     {
@@ -68,6 +69,7 @@ import { format } from "path";
 // ];
 
 export type Member = {
+    id: string;
     name: string;
     ph_number: string;
     profile_image: string | null;
@@ -103,8 +105,10 @@ export const columns: ColumnDef<Member>[] = [
         accessorKey: "name",
         header: "Name",
         cell: ({ row }) => {
+    
             const name: string = row.getValue("name");
             const profile_image = row.original.profile_image;
+            const id = row.original.id;
 
             return (
                 <div className="flex items-center gap-3">
@@ -119,7 +123,7 @@ export const columns: ColumnDef<Member>[] = [
                             {name[0]}
                         </div>
                     )}
-                    <span>{name}</span>
+                    <a href={`/members/${id}`}>{name}</a>
                 </div>
             );
         },
@@ -169,6 +173,17 @@ export const columns: ColumnDef<Member>[] = [
         },
     },
     {
+        accessorKey: 'subscription',
+        header: "Subscription",
+        cell: ({ row }) => {
+            return (
+                <Button className="cursor-pointer">
+                    Buy
+                </Button>
+            )
+        }
+    },
+    {
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
@@ -201,6 +216,7 @@ export const columns: ColumnDef<Member>[] = [
 ];
 
 export default function MembersTable({ data }: { data: Member[] }) {
+    const { setAddMemberModalOpen } = useAddMemberModal();
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
         React.useState<ColumnFiltersState>([]);
@@ -244,32 +260,9 @@ export default function MembersTable({ data }: { data: Member[] }) {
                     }
                     className="max-w-sm"
                 />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            Columns <ChevronDown />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter((column) => column.getCanHide())
-                            .map((column) => {
-                                return (
-                                    <DropdownMenuCheckboxItem
-                                        key={column.id}
-                                        className="capitalize"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={(value) =>
-                                            column.toggleVisibility(!!value)
-                                        }
-                                    >
-                                        {column.id}
-                                    </DropdownMenuCheckboxItem>
-                                );
-                            })}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <Button className="ml-auto cursor-pointer" onClick={() => setAddMemberModalOpen(true)}>
+                    Add Member
+                </Button>
             </div>
             <div className="rounded-md border">
                 <Table>
