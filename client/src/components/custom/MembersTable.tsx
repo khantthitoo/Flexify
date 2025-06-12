@@ -9,6 +9,7 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
+    RowSelection,
     SortingState,
     useReactTable,
     VisibilityState,
@@ -36,7 +37,8 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { format } from "path";
-import { useAddMemberModal } from "@/contexts/AddMemberModalContext";
+import { useMembersTable } from "@/contexts/MembersTableContext";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // const data: Member[] = [
 //     {
@@ -105,7 +107,6 @@ export const columns: ColumnDef<Member>[] = [
         accessorKey: "name",
         header: "Name",
         cell: ({ row }) => {
-    
             const name: string = row.getValue("name");
             const profile_image = row.original.profile_image;
             const id = row.original.id;
@@ -134,7 +135,7 @@ export const columns: ColumnDef<Member>[] = [
         cell: ({ row }) => {
             const ph_number = row.getValue("ph_number");
             return ph_number;
-        }
+        },
     },
     {
         accessorKey: "joined_at",
@@ -173,21 +174,26 @@ export const columns: ColumnDef<Member>[] = [
         },
     },
     {
-        accessorKey: 'subscription',
+        accessorKey: "subscription",
         header: "Subscription",
         cell: ({ row }) => {
+            const { setCurrentBuyingMember } = useMembersTable();
             return (
-                <Button className="cursor-pointer">
+                <Button
+                    className="cursor-pointer"
+                    onClick={() => setCurrentBuyingMember(row.original.id)}
+                >
                     Buy
                 </Button>
-            )
-        }
+            );
+        },
     },
     {
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
             const member = row.original;
+            const { setAddMemberModalAction } = useMembersTable();
 
             return (
                 <DropdownMenu>
@@ -207,7 +213,7 @@ export const columns: ColumnDef<Member>[] = [
                             Copy Phone
                         </DropdownMenuItem>
                         <DropdownMenuItem>View Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Edit Member</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setAddMemberModalAction(row.original.id)}>Edit Member</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );
@@ -216,13 +222,28 @@ export const columns: ColumnDef<Member>[] = [
 ];
 
 export default function MembersTable({ data }: { data: Member[] }) {
-    const { setAddMemberModalOpen } = useAddMemberModal();
+    const {
+        setAddMemberModalAction,
+        setPage,
+        canNext,
+        canPrevious,
+        fetchMembers,
+    } = useMembersTable();
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
         React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
+    const [query, setQuery] = React.useState<string>("");
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    React.useEffect(() => {
+        const params = new URLSearchParams(searchParams);
+        params.set("search", query);
+        router.push(`?${params.toString()}`);
+    }, [query]);
 
     const table = useReactTable({
         data,
@@ -248,19 +269,14 @@ export default function MembersTable({ data }: { data: Member[] }) {
             <div className="flex items-center py-4">
                 <Input
                     placeholder="Filter by name..."
-                    value={
-                        (table
-                            .getColumn("name")
-                            ?.getFilterValue() as string) ?? ""
-                    }
-                    onChange={(event) =>
-                        table
-                            .getColumn("name")
-                            ?.setFilterValue(event.target.value)
-                    }
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
                     className="max-w-sm"
                 />
-                <Button className="ml-auto cursor-pointer" onClick={() => setAddMemberModalOpen(true)}>
+                <Button
+                    className="ml-auto cursor-pointer"
+                    onClick={() => setAddMemberModalAction("add")}
+                >
                     Add Member
                 </Button>
             </div>
@@ -326,16 +342,16 @@ export default function MembersTable({ data }: { data: Member[] }) {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
+                        onClick={() => setPage((curr) => curr - 1)}
+                        disabled={!canPrevious}
                     >
                         Previous
                     </Button>
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
+                        onClick={() => setPage((curr) => curr + 1)}
+                        disabled={!canNext}
                     >
                         Next
                     </Button>

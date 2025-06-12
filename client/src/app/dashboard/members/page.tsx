@@ -10,28 +10,52 @@ import {
     useState,
 } from "react";
 import AddMemberModal from "@/components/custom/AddMemberModal";
-import { AddMemberModalContext } from "@/contexts/AddMemberModalContext";
+import { MembersTableContext } from "@/contexts/MembersTableContext";
+import { useRouter, useSearchParams } from "next/navigation";
+import SubModal from "@/components/custom/SubModal";
 
 const MembersPage = () => {
+    const searchParams = useSearchParams();
     const [members, setMembers] = useState<Member[]>([]);
-    const [addMemberModalOpen, setAddMemberModalOpen] =
-        useState<boolean>(false);
+    const [addMemberModalAction, setAddMemberModalAction] =
+        useState<string>("");
+    const [page, setPage] = useState<number>(1);
+    const [canNext, setCanNext] = useState<boolean>(false);
+    const [canPrevious, setCanPrevious] = useState<boolean>(false);
+    const [currentBuyingMember, setCurrentBuyingMember] = useState<string>("");
+    const search = searchParams.get("search");
 
-    const fetchMembers = async () => {
-        const response = await axiosInstance.get("/members/");
-        setMembers(response.data);
+    const fetchMembers = async (number: number) => {
+        const response = await axiosInstance.get(
+            `/members/?page=${number}&search=${search}`
+        );
+        setMembers(response.data.results);
+        setCanNext(response.data.next !== null);
+        setCanPrevious(response.data.previous !== null);
     };
 
     useEffect(() => {
-        fetchMembers();
-    }, []);
+        fetchMembers(page);
+    }, [page, search]);
 
     return (
         <section className="flex-1 px-4">
-            <AddMemberModalContext.Provider value={{ setAddMemberModalOpen, fetchMembers }}>
+            <MembersTableContext.Provider
+                value={{
+                    setAddMemberModalAction,
+                    addMemberModalAction,
+                    fetchMembers,
+                    setPage,
+                    canNext,
+                    canPrevious,
+                    setCurrentBuyingMember,
+                    currentBuyingMember
+                }}
+            >
                 <MembersTable data={members} />
-                {addMemberModalOpen && <AddMemberModal />}
-            </AddMemberModalContext.Provider>
+                {addMemberModalAction !== "" && <AddMemberModal />}
+                {currentBuyingMember !== "" && <SubModal />}
+            </MembersTableContext.Provider>
         </section>
     );
 };

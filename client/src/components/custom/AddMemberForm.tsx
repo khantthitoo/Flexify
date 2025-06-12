@@ -1,39 +1,87 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "../ui/card";
 import { Phone, User } from "lucide-react";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import axiosInstance from "../../../utils/axiosInstance";
-import { useAddMemberModal } from "@/contexts/AddMemberModalContext";
+import { useMembersTable } from "@/contexts/MembersTableContext";
 import { useRouter } from "next/navigation";
 
 const AddMemberForm = () => {
     const [name, setName] = useState<string>("");
     const [phone, setPhone] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-    const { setAddMemberModalOpen, fetchMembers } = useAddMemberModal();
+    const [profile, setProfile] = useState<string | null>(null);
+    const { setAddMemberModalAction, addMemberModalAction, fetchMembers } =
+        useMembersTable();
     const router = useRouter();
+
+    useEffect(() => {
+        const fetchMember = async () => {
+            setLoading(true);
+            try {
+                const response = await axiosInstance.get(
+                    `/members/${addMemberModalAction}/`
+                );
+                setName(response.data.name);
+                setPhone(response.data.ph_number);
+                setProfile(response.data.profile_image);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (addMemberModalAction !== "add") {
+            fetchMember();
+        }
+    }, []);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
         setLoading(true);
         try {
-            const response = await axiosInstance.post('/members/', {
-                name: name,
-                ph_number: phone
-            });
-            setAddMemberModalOpen(false);
-            fetchMembers();
+            if (addMemberModalAction !== "add") {
+                await axiosInstance.patch(`/members/${addMemberModalAction}/`, {
+                    name: name,
+                    ph_number: phone,
+                });
+            } else {
+                await axiosInstance.post("/members/", {
+                    name: name,
+                    ph_number: phone,
+                });
+            }
+            setAddMemberModalAction("");
+            fetchMembers(1);
         } catch (err) {
             console.error(err);
         } finally {
             setLoading(false);
         }
-    }
+    };
+
+    const handleProfileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                setProfile(evt.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     return (
         <Card className="w-md" onClick={(e) => e.stopPropagation()}>
@@ -43,9 +91,22 @@ const AddMemberForm = () => {
             <form onSubmit={handleSubmit}>
                 <CardContent className="flex flex-col items-center">
                     <div className="flex items-center gap-4">
-                        <Avatar>
+                        <input
+                            type="file"
+                            hidden
+                            id="profile-input"
+                            onChange={handleProfileChange}
+                        />
+                        <Avatar
+                            className="cursor-pointer"
+                            onClick={() =>
+                                document
+                                    .getElementById("profile-input")
+                                    ?.click()
+                            }
+                        >
                             <AvatarImage
-                                src={""}
+                                src={profile || ""}
                                 className="w-24 h-24 object-cover rounded-full"
                             />
                             <AvatarFallback className="">
@@ -71,6 +132,7 @@ const AddMemberForm = () => {
                             <Input
                                 id="name"
                                 placeholder="Enter member name"
+                                value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 className="pl-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-gray-500"
                                 required
@@ -90,6 +152,7 @@ const AddMemberForm = () => {
                             <Input
                                 id="phone"
                                 placeholder="(09) 884178787"
+                                value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 className="pl-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-gray-500"
                                 required
@@ -102,9 +165,11 @@ const AddMemberForm = () => {
                     <Button
                         type="submit"
                         className="w-full text-white mt-5 cursor-pointer"
-                        // disabled={isSubmitting}
+                        disabled={loading}
                     >
-                        Add Member
+                        {addMemberModalAction !== "add"
+                            ? "Update Member"
+                            : "Add Member"}
                     </Button>
                 </CardFooter>
             </form>
