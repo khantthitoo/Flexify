@@ -222,6 +222,7 @@ export const columns: ColumnDef<Member>[] = [
 ];
 
 export default function MembersTable({ data }: { data: Member[] }) {
+    const searchParams = useSearchParams();
     const {
         setAddMemberModalAction,
         setPage,
@@ -235,9 +236,8 @@ export default function MembersTable({ data }: { data: Member[] }) {
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const [query, setQuery] = React.useState<string>("");
+    const [query, setQuery] = React.useState<string>(searchParams.get('search') ?? "");
     const router = useRouter();
-    const searchParams = useSearchParams();
 
     React.useEffect(() => {
         const params = new URLSearchParams(searchParams);
