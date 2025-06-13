@@ -23,15 +23,34 @@ const MembersPage = () => {
     const [canNext, setCanNext] = useState<boolean>(false);
     const [canPrevious, setCanPrevious] = useState<boolean>(false);
     const [currentBuyingMember, setCurrentBuyingMember] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
     const search = searchParams.get("search");
 
     const fetchMembers = async (number: number) => {
-        const response = await axiosInstance.get(
-            `/members/?page=${number}&search=${search}`
-        );
-        setMembers(response.data.results);
-        setCanNext(response.data.next !== null);
-        setCanPrevious(response.data.previous !== null);
+        setLoading(true);
+        try {
+            const response = await axiosInstance.get(
+                `/members/?page=${number}&search=${search}`
+            );
+            setMembers(response.data.results);
+            setCanNext(response.data.next !== null);
+            setCanPrevious(response.data.previous !== null);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const checkin = async (id: string) => {
+        try {
+            await axiosInstance.post(`/members/${id}/checkin/`);
+            fetchMembers(page);
+        } catch (err: any) {
+            if (err.response.data.code === "already_checkedin") {
+                alert(err.response.data.message);
+            }
+        }
     };
 
     useEffect(() => {
@@ -49,7 +68,8 @@ const MembersPage = () => {
                     canNext,
                     canPrevious,
                     setCurrentBuyingMember,
-                    currentBuyingMember
+                    currentBuyingMember,
+                    checkin
                 }}
             >
                 <MembersTable data={members} />

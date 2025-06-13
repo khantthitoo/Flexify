@@ -78,6 +78,7 @@ export type Member = {
     end_date: string | null;
     status: string;
     days_left: number;
+    checked_in: boolean;
     joined_at: string;
 };
 
@@ -189,6 +190,23 @@ export const columns: ColumnDef<Member>[] = [
         },
     },
     {
+        accessorKey: "attendance",
+        header: "Attendance",
+        cell: ({ row }) => {
+            const { checkin } = useMembersTable();
+            return (
+                <Button
+                    variant={row.original.checked_in ? "outline" : "default"}
+                    className="cursor-pointer"
+                    disabled={row.original.checked_in}
+                    onClick={() => checkin(row.original.id)}
+                >
+                    Check In
+                </Button>
+            );
+        },
+    },
+    {
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
@@ -213,7 +231,13 @@ export const columns: ColumnDef<Member>[] = [
                             Copy Phone
                         </DropdownMenuItem>
                         <DropdownMenuItem>View Profile</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setAddMemberModalAction(row.original.id)}>Edit Member</DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() =>
+                                setAddMemberModalAction(row.original.id)
+                            }
+                        >
+                            Edit Member
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );
@@ -236,7 +260,9 @@ export default function MembersTable({ data }: { data: Member[] }) {
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const [query, setQuery] = React.useState<string>(searchParams.get('search') ?? "");
+    const [query, setQuery] = React.useState<string>(
+        searchParams.get("search") ?? ""
+    );
     const router = useRouter();
 
     React.useEffect(() => {

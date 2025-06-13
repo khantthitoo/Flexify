@@ -11,6 +11,7 @@ import {
 } from "../ui/card";
 import axiosInstance from "../../../utils/axiosInstance";
 import { useMembersTable } from "@/contexts/MembersTableContext";
+import { SpinnerCircularFixed } from "spinners-react";
 
 const subscriptions = {
     one: {
@@ -33,7 +34,7 @@ const keys = Object.keys(subscriptions) as SubscriptionKey[];
 const SubForm = () => {
     const [selectedSub, setSelectedSub] = useState<SubscriptionKey>("one");
     const [loading, setLoading] = useState<boolean>(false);
-    const { currentBuyingMember, setCurrentBuyingMember, setPage } =
+    const { currentBuyingMember, setCurrentBuyingMember, setPage, fetchMembers } =
         useMembersTable();
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
@@ -49,6 +50,7 @@ const SubForm = () => {
             );
             setCurrentBuyingMember("");
             setPage(1);
+            fetchMembers(1);
         } catch (err) {
             console.error(err);
         } finally {
@@ -88,7 +90,17 @@ const SubForm = () => {
                         className="w-full text-white cursor-pointer mt-5"
                         // disabled={isSubmitting}
                     >
-                        Buy
+                        {loading ? (
+                            <SpinnerCircularFixed
+                                size={50}
+                                thickness={100}
+                                speed={100}
+                                color="rgba(255, 255, 255, 1)"
+                                secondaryColor="rgba(0, 0, 0, 0.44)"
+                            />
+                        ) : (
+                            "Buy"
+                        )}
                     </Button>
                 </CardFooter>
             </form>

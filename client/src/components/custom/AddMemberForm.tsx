@@ -15,6 +15,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import axiosInstance from "../../../utils/axiosInstance";
 import { useMembersTable } from "@/contexts/MembersTableContext";
 import { useRouter } from "next/navigation";
+import { SpinnerCircularFixed } from "spinners-react";
 
 const AddMemberForm = () => {
     const [name, setName] = useState<string>("");
@@ -24,6 +25,8 @@ const AddMemberForm = () => {
     const { setAddMemberModalAction, addMemberModalAction, fetchMembers } =
         useMembersTable();
     const router = useRouter();
+
+    const submitBtnText = addMemberModalAction !== "add" ? "Update" : "Add";
 
     useEffect(() => {
         const fetchMember = async () => {
@@ -167,9 +170,17 @@ const AddMemberForm = () => {
                         className="w-full text-white mt-5 cursor-pointer"
                         disabled={loading}
                     >
-                        {addMemberModalAction !== "add"
-                            ? "Update Member"
-                            : "Add Member"}
+                        {loading ? (
+                            <SpinnerCircularFixed
+                                size={50}
+                                thickness={100}
+                                speed={100}
+                                color="rgba(255, 255, 255, 1)"
+                                secondaryColor="rgba(0, 0, 0, 0.44)"
+                            />
+                        ) : (
+                            submitBtnText
+                        )}
                     </Button>
                 </CardFooter>
             </form>

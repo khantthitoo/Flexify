@@ -9,6 +9,7 @@ interface MembersTableContextType {
     canPrevious: boolean;
     setCurrentBuyingMember: Dispatch<SetStateAction<string>>;
     currentBuyingMember: string;
+    checkin: (id: string) => void;
 }
 
 export const MembersTableContext = createContext<

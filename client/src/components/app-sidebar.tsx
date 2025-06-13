@@ -59,7 +59,7 @@ const data = {
         },
         {
             title: "Trainers",
-            url: "#",
+            url: "/dashboard/trainers",
             icon: Inbox,
             badge: "10",
         },
