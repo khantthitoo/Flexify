@@ -9,7 +9,7 @@ class Command(BaseCommand):
         print("[CRON] Running update_members at:", date.today())
         members = Member.objects.all()
         for member in members:
-            member.days_left -= 1
+            member.days_left = max(member.days_left - 1, 0)
             if member.days_left == 0 and member.status == "active":
                 member.status = Member.StatusChoices.EXPIRED
             member.save()
