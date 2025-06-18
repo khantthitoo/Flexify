@@ -1,5 +1,5 @@
 import { useMembersTable } from "@/contexts/MembersTableContext";
-import { Card } from "../ui/card";
+import { Card } from "../../ui/card";
 import AddMemberForm from "./AddMemberForm";
 
 const AddMemberModal = () => {

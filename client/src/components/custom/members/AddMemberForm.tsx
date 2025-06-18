@@ -6,13 +6,13 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "../ui/card";
+} from "../../ui/card";
 import { Phone, User } from "lucide-react";
-import { Button } from "../ui/button";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
+import { Button } from "../../ui/button";
+import { Label } from "../../ui/label";
+import { Input } from "../../ui/input";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import axiosInstance from "../../../utils/axiosInstance";
+import axiosInstance from "../../../../utils/axiosInstance";
 import { useMembersTable } from "@/contexts/MembersTableContext";
 import { useRouter } from "next/navigation";
 import { SpinnerCircularFixed } from "spinners-react";
@@ -22,7 +22,7 @@ const AddMemberForm = () => {
     const [phone, setPhone] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [profile, setProfile] = useState<string | null>(null);
-    const { setAddMemberModalAction, addMemberModalAction, fetchMembers } =
+    const { setAddMemberModalAction, addMemberModalAction, fetchMembers, setPage } =
         useMembersTable();
     const router = useRouter();
 
@@ -67,6 +67,7 @@ const AddMemberForm = () => {
                 });
             }
             setAddMemberModalAction("");
+            setPage(1);
             fetchMembers(1);
         } catch (err) {
             console.error(err);

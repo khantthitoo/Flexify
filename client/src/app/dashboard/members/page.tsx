@@ -1,5 +1,5 @@
 "use client";
-import MembersTable, { Member } from "@/components/custom/MembersTable";
+import MembersTable, { Member } from "@/components/custom/members/MembersTable";
 import axiosInstance from "../../../../utils/axiosInstance";
 import {
     createContext,
@@ -9,10 +9,10 @@ import {
     useEffect,
     useState,
 } from "react";
-import AddMemberModal from "@/components/custom/AddMemberModal";
+import AddMemberModal from "@/components/custom/members/AddMemberModal";
 import { MembersTableContext } from "@/contexts/MembersTableContext";
 import { useRouter, useSearchParams } from "next/navigation";
-import SubModal from "@/components/custom/SubModal";
+import SubModal from "@/components/custom/members/SubModal";
 
 const MembersPage = () => {
     const searchParams = useSearchParams();
@@ -69,7 +69,7 @@ const MembersPage = () => {
                     canPrevious,
                     setCurrentBuyingMember,
                     currentBuyingMember,
-                    checkin
+                    checkin,
                 }}
             >
                 <MembersTable data={members} />

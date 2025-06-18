@@ -53,15 +53,15 @@ const data = {
             icon: Sparkles,
         },
         {
-            title: "Attendance",
-            url: "#",
-            icon: Home,
-        },
-        {
             title: "Trainers",
             url: "/dashboard/trainers",
             icon: Inbox,
             badge: "10",
+        },
+        {
+            title: "Attendance",
+            url: "#",
+            icon: Home,
         },
         {
             title: "Workout Plans",
