@@ -28,6 +28,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-spinners": "^0.17.0",
+    "recharts": "^2.15.3",
     "spinners-react": "^1.0.11",
     "tailwind-merge": "^3.3.0"
   },

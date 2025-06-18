@@ -1,3 +1,4 @@
+import { AttendanceChart } from "@/components/custom/dashboard/AttendanceChart";
 import { StatsCards } from "@/components/custom/dashboard/StatsCards";
 
 const Dashboard = () => {
@@ -7,6 +8,8 @@ const Dashboard = () => {
                 <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                     <StatsCards />
                 </div>
+
+                <AttendanceChart />
             </div>
         </div>
     );
