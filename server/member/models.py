@@ -38,3 +38,12 @@ class Member(models.Model):
     def __str__(self):
         return self.name
     
+class Payment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    plan = models.CharField(max_length=100)
+    amount = models.IntegerField()
+    date = models.DateField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.plan
+    

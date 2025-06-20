@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'member',
     'trainer',
     'attendance',
+    'stats',
 ]
 
 MIDDLEWARE = [

@@ -7,10 +7,10 @@ class MemberSerializer(serializers.ModelSerializer):
     checked_in = serializers.SerializerMethodField(read_only=True)
     
     def get_checked_in(self, obj):
-        if(Attendance.objects.filter(member=obj, date=date.today())):
+        if Attendance.objects.filter(member=obj, date=date.today()):
             return True
         
-        if(obj.status != Member.StatusChoices.ACTIVE):
+        if obj.status != Member.StatusChoices.ACTIVE:
             return True
         
         return False
